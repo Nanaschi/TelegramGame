@@ -1,165 +1,163 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | ReneChecking</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
-    <style>
-      body, html {
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-      }
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | ReneChecking</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+  <style>
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
+    #unity-container.unity-mobile {
+      transform-origin: center center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    @media screen and (orientation: portrait) {
       #unity-container.unity-mobile {
-        transform-origin: center center;
+        display: none;
       }
 
-      @media screen and (orientation: portrait) {
-        #unity-container.unity-mobile {
-          transform: rotate(90deg);
-          width: 100vh;
-          height: 100vw;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform-origin: center center;
-          transform: rotate(90deg) translate(-50%, -50%);
-        }
-
-        #rotate-warning {
-          display: flex;
-        }
+      #rotate-warning {
+        display: flex;
       }
+    }
 
-      @media screen and (orientation: landscape) {
-        #unity-container.unity-mobile {
-          transform: rotate(0deg);
-          width: 100vw;
-          height: 100vh;
-          position: static;
-        }
-
-        #rotate-warning {
-          display: none;
-        }
+    @media screen and (orientation: landscape) {
+      #unity-container.unity-mobile {
+        display: flex;
       }
 
       #rotate-warning {
         display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.8);
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        color: white;
-        font-size: 24px;
-        z-index: 1000;
       }
+    }
 
-      #rotate-warning img {
-        width: 100px;
-        height: auto;
-        margin-top: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="rotate-warning">
-      Please rotate your device to landscape mode
-      <img src="https://www.owayo.com/konfigurator_html/img/rotate_icon_thumb.png" alt="Rotate Icon">
-    </div>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">ReneChecking</div>
+    #rotate-warning {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-size: 24px;
+      z-index: 1000;
+    }
+
+    #rotate-warning img {
+      width: 100px;
+      height: auto;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="rotate-warning">
+    Please rotate your device to landscape mode
+    <img src="https://www.owayo.com/konfigurator_html/img/rotate_icon_thumb.png" alt="Rotate Icon">
+  </div>
+  <div id="unity-container" class="unity-mobile">
+    <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
       </div>
     </div>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+    <div id="unity-warning"> </div>
+    <div id="unity-footer">
+      <div id="unity-webgl-logo"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">ReneChecking</div>
+    </div>
+  </div>
+  <script>
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var warningBanner = document.querySelector("#unity-warning");
 
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
       }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/game.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/game.data",
-        frameworkUrl: buildUrl + "/game.framework.js",
-        codeUrl: buildUrl + "/game.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "ReneChecking",
-        productVersion: "0.1",
-        showBanner: unityShowBanner,
-      };
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        container.className = "unity-mobile";
-        canvas.className = "unity-mobile";
-        // To lower canvas resolution on mobile devices to gain some performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-      } else {
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      else {
+        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+        setTimeout(function() {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
       }
+      updateBannerVisibility();
+    }
 
-      loadingBar.style.display = "block";
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/game.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/game.data",
+      frameworkUrl: buildUrl + "/game.framework.js",
+      codeUrl: buildUrl + "/game.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "ReneChecking",
+      productVersion: "0.1",
+      showBanner: unityShowBanner,
+    };
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
-      };
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      container.className = "unity-mobile";
+      canvas.className = "unity-mobile";
+      // To lower canvas resolution on mobile devices to gain some performance, uncomment the following line:
+      // config.devicePixelRatio = 1;
+    } else {
+      canvas.style.width = "960px";
+      canvas.style.height = "600px";
+    }
 
-      document.body.appendChild(script);
-    </script>
-  </body>
+    loadingBar.style.display = "block";
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((unityInstance) => {
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
+      }).catch((message) => {
+        alert(message);
+      });
+    };
+
+    document.body.appendChild(script);
+  </script>
+</body>
 </html>
